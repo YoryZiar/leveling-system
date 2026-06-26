@@ -18,7 +18,15 @@
           <span class="font-label-mono text-label-mono text-primary uppercase tracking-widest">TRAINING</span>
         </div>
         <h1 class="font-display-lg text-[40px] md:text-display-lg text-on-surface uppercase glow-text tracking-tighter">{{ quest.title }}</h1>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-stack-sm max-w-md">Lakukan dengan form yang benar untuk menghindari cedera.</p>
+        
+        <!-- Illustration / Description Card -->
+        <div class="mt-stack-md p-stack-md bg-surface-container-highest hud-border text-left w-full max-w-sm flex gap-3 relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+          <span class="material-symbols-outlined text-primary text-[28px] shrink-0" style="font-variation-settings: 'FILL' 1;">info</span>
+          <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            {{ quest.description || 'Lakukan dengan form yang benar untuk menghindari cedera.' }}
+          </p>
+        </div>
       </div>
 
       <!-- Rep Counter HUD -->
