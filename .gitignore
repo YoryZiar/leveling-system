@@ -1,4 +1,5 @@
 # Nuxt 3 build/dev directories
+.netlify
 .nuxt
 .output
 
