@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc, deleteDoc, onSnapshot, collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 import { QUEST_POOL } from '../utils/questPool'
+import { hunterClasses } from '../utils/hunterClasses'
 
 export const useHunterState = () => {
   const defaultState = {
@@ -219,10 +220,15 @@ export const useHunterState = () => {
       state.value.profile.gold += goldReward
       state.value.rewardsClaimed = true
       
-      if (state.value.profile.exp >= state.value.profile.maxExp) {
-        state.value.profile.level++
+      while (state.value.profile.exp >= state.value.profile.maxExp) {
         state.value.profile.exp -= state.value.profile.maxExp
+        state.value.profile.level++
         state.value.profile.maxExp = Math.floor(state.value.profile.maxExp * 1.5)
+        
+        if (state.value.profile.level % 10 === 0) {
+          const randomIndex = Math.floor(Math.random() * hunterClasses.length)
+          state.value.profile.hunterClass = hunterClasses[randomIndex].name
+        }
       }
       await saveToFirestore()
     }

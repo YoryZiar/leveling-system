@@ -1,8 +1,8 @@
 <template>
-  <div class="p-stack-md flex flex-col gap-stack-lg max-w-4xl mx-auto">
+  <div class="p-stack-md flex flex-col gap-stack-lg max-w-4xl mx-auto" :class="{'glitch-shake': isGlitching}">
     
     <!-- Penalty Banner -->
-    <div v-if="state.profile.penaltyMessage" class="bg-error/10 border border-error p-stack-md rounded-sm relative overflow-hidden group">
+    <div v-if="!isGlitching && state.profile.penaltyMessage" class="bg-error/10 border border-error p-stack-md rounded-sm relative overflow-hidden group">
       <div class="absolute inset-0 bg-error/5 group-hover:bg-error/10 transition-colors"></div>
       <div class="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-start gap-3">
@@ -18,46 +18,51 @@
       </div>
     </div>
 
+    <!-- Loading System Error Effect -->
+    <div v-if="isGlitching" class="text-error font-label-mono text-center mb-0 animate-pulse text-xs md:text-sm tracking-widest uppercase">
+      SYSTEM_ERROR: DATA_CORRUPTION_DETECTED // ATTEMPTING_RECOVERY...
+    </div>
+
     <!-- Profile & Level Badge -->
-    <section class="bg-surface-container hud-border p-stack-md flex flex-col items-center justify-center relative overflow-hidden group w-full">
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-container/10 via-transparent to-transparent opacity-50"></div>
+    <section class="bg-surface-container hud-border p-stack-md flex flex-col items-center justify-center relative overflow-hidden group w-full transition-colors duration-200" :class="{'border-error': isGlitching}">
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] via-transparent to-transparent opacity-50 transition-colors duration-200" :class="isGlitching ? 'from-error/20' : 'from-primary-container/10'"></div>
       
       <div class="relative w-32 h-32 mb-stack-md">
-        <svg class="absolute inset-0 w-full h-full animate-[spin_10s_linear_infinite] opacity-50 text-primary-container" viewBox="0 0 100 100">
+        <svg class="absolute inset-0 w-full h-full opacity-50 transition-colors duration-200" :class="isGlitching ? 'text-error animate-[spin_0.5s_linear_infinite]' : 'text-primary-container animate-[spin_10s_linear_infinite]'" viewBox="0 0 100 100">
           <polygon fill="none" points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" stroke="currentColor" stroke-width="1"></polygon>
         </svg>
-        <div class="absolute inset-2 bg-surface-dim flex items-center justify-center border border-primary-container hud-glow rotate-45">
+        <div class="absolute inset-2 bg-surface-dim flex items-center justify-center border hud-glow rotate-45 transition-colors duration-200" :class="isGlitching ? 'border-error shadow-[0_0_15px_rgba(255,84,73,0.6)]' : 'border-primary-container'">
           <div class="-rotate-45 text-center">
-            <div class="font-label-mono text-label-mono text-on-surface-variant mb-1">LEVEL</div>
-            <div class="font-display-lg text-display-lg text-primary-container hud-text-glow">{{ state.profile.level }}</div>
+            <div class="font-label-mono text-label-mono mb-1 transition-colors duration-200" :class="isGlitching ? 'text-error' : 'text-on-surface-variant'">LEVEL</div>
+            <div class="font-display-lg text-display-lg hud-text-glow transition-colors duration-200" :class="isGlitching ? 'text-error' : 'text-primary-container'">{{ isGlitching ? displayLevel : state.profile.level }}</div>
           </div>
         </div>
       </div>
       
-      <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface text-center uppercase tracking-tight">{{ state.profile.name }}</h2>
-      <div class="font-label-mono text-label-mono text-error uppercase tracking-widest mt-unit border border-error px-2 py-1 rounded">{{ state.profile.hunterClass }}</div>
+      <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-center uppercase tracking-tight transition-colors duration-200" :class="isGlitching ? 'text-error font-mono' : 'text-on-surface'">{{ isGlitching ? displayName : state.profile.name }}</h2>
+      <div class="font-label-mono text-label-mono uppercase tracking-widest mt-unit border px-2 py-1 rounded transition-colors duration-200" :class="isGlitching ? 'text-error border-error font-bold' : 'text-error border-error'">{{ isGlitching ? displayClass : state.profile.hunterClass }}</div>
     </section>
 
     <!-- Rank & Class Info -->
-    <section class="bg-surface-container hud-border p-stack-md flex flex-col justify-between w-full">
-      <div class="flex justify-between items-start mb-stack-lg border-b border-outline-variant pb-stack-md">
+    <section class="bg-surface-container hud-border p-stack-md flex flex-col justify-between w-full transition-colors duration-200" :class="{'border-error': isGlitching}">
+      <div class="flex justify-between items-start mb-stack-lg border-b pb-stack-md transition-colors duration-200" :class="isGlitching ? 'border-error/50' : 'border-outline-variant'">
         <div>
-          <div class="font-label-mono text-label-mono text-on-surface-variant mb-unit">RANK SEKARANG</div>
-          <div class="font-display-lg text-[32px] md:text-display-lg text-on-surface">{{ state.profile.rank }}</div>
+          <div class="font-label-mono text-label-mono mb-unit transition-colors duration-200" :class="isGlitching ? 'text-error' : 'text-on-surface-variant'">RANK SEKARANG</div>
+          <div class="font-display-lg text-[32px] md:text-display-lg transition-colors duration-200" :class="isGlitching ? 'text-error font-mono' : 'text-on-surface'">{{ isGlitching ? displayRank : state.profile.rank }}</div>
         </div>
         <div class="text-right">
-          <div class="font-label-mono text-label-mono text-on-surface-variant mb-unit">GOLD</div>
-          <div class="font-headline-lg-mobile text-headline-lg-mobile text-yellow-500 uppercase glow-text">{{ state.profile.gold }} G</div>
+          <div class="font-label-mono text-label-mono mb-unit transition-colors duration-200" :class="isGlitching ? 'text-error' : 'text-on-surface-variant'">GOLD</div>
+          <div class="font-headline-lg-mobile text-headline-lg-mobile uppercase glow-text transition-colors duration-200" :class="isGlitching ? 'text-error font-mono' : 'text-yellow-500'">{{ isGlitching ? displayGold : state.profile.gold }} G</div>
         </div>
       </div>
       
       <div>
         <div class="flex justify-between items-end mb-unit font-label-mono text-label-mono">
-          <span class="text-on-surface-variant">PENGALAMAN (EXP)</span>
-          <span class="text-primary-container">{{ state.profile.exp }} / {{ state.profile.maxExp }}</span>
+          <span class="transition-colors duration-200" :class="isGlitching ? 'text-error' : 'text-on-surface-variant'">PENGALAMAN (EXP)</span>
+          <span class="transition-colors duration-200" :class="isGlitching ? 'text-error font-mono' : 'text-primary-container'">{{ isGlitching ? displayExp : state.profile.exp }} / {{ isGlitching ? displayMaxExp : state.profile.maxExp }}</span>
         </div>
-        <div class="w-full h-4 bg-surface-dim border border-outline-variant relative overflow-hidden">
-          <div class="absolute top-0 left-0 h-full bg-primary-container hud-glow transition-all duration-500" :style="{ width: `${(state.profile.exp / state.profile.maxExp) * 100}%` }">
+        <div class="w-full h-4 bg-surface-dim border relative overflow-hidden transition-colors duration-200" :class="isGlitching ? 'border-error' : 'border-outline-variant'">
+          <div class="absolute top-0 left-0 h-full hud-glow transition-all duration-75" :class="isGlitching ? 'bg-error' : 'bg-primary-container duration-500'" :style="{ width: isGlitching ? `${Math.random() * 100}%` : `${(state.profile.exp / state.profile.maxExp) * 100}%` }">
             <div class="absolute top-0 right-0 h-full w-4 bg-white/50 blur-sm"></div>
           </div>
         </div>
@@ -65,19 +70,19 @@
     </section>
 
     <!-- Stats HUD -->
-    <section class="bg-surface-container hud-border p-stack-md w-full">
+    <section class="bg-surface-container hud-border p-stack-md w-full transition-colors duration-200" :class="{'border-error': isGlitching}">
       <div class="flex justify-between items-center mb-stack-md">
-        <h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface uppercase border-l-4 border-primary-container pl-unit">Status Fisik</h3>
+        <h3 class="font-headline-lg-mobile text-headline-lg-mobile uppercase border-l-4 pl-unit transition-colors duration-200" :class="isGlitching ? 'text-error border-error' : 'text-on-surface border-primary-container'">Status Fisik</h3>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-        <div v-for="(val, key) in state.stats" :key="key" class="bg-surface-dim border border-outline-variant p-stack-sm flex items-center justify-between group hover:border-primary-container transition-colors">
+        <div v-for="(val, key) in state.stats" :key="key" class="bg-surface-dim border p-stack-sm flex items-center justify-between group transition-colors duration-200" :class="isGlitching ? 'border-error/50' : 'border-outline-variant hover:border-primary-container'">
           <div class="flex items-center gap-stack-sm">
-            <span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">{{ getIcon(key) }}</span>
-            <span class="font-label-mono text-label-mono text-on-surface-variant uppercase">{{ key }}</span>
+            <span class="material-symbols-outlined transition-colors duration-200" :class="isGlitching ? 'text-error animate-spin' : 'text-primary-container'" style="font-variation-settings: 'FILL' 1;">{{ isGlitching ? 'warning' : getIcon(key) }}</span>
+            <span class="font-label-mono text-label-mono uppercase transition-colors duration-200" :class="isGlitching ? 'text-error' : 'text-on-surface-variant'">{{ key }}</span>
           </div>
           <div class="flex items-center gap-stack-sm">
-            <span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">{{ Number(val).toFixed(1) }}</span>
+            <span class="font-headline-lg-mobile text-headline-lg-mobile transition-colors duration-200" :class="isGlitching ? 'text-error font-mono' : 'text-on-surface'">{{ isGlitching ? displayStats[key] : Number(val).toFixed(1) }}</span>
           </div>
         </div>
       </div>
@@ -86,10 +91,54 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+
 const { state, initLocalStorage, clearPenalty } = useHunterState()
+
+const isGlitching = ref(true)
+const displayLevel = ref('??')
+const displayName = ref('ERROR_DATA_CORRUPT')
+const displayClass = ref('UNKNOWN')
+const displayRank = ref('?')
+const displayGold = ref('ERR')
+const displayExp = ref('ERR')
+const displayMaxExp = ref('ERR')
+const displayStats = ref({
+  str: '??',
+  agi: '??',
+  end: '??',
+  per: '??',
+  int: '??'
+})
 
 onMounted(() => {
   initLocalStorage()
+  
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*<>?'
+  let iteration = 0
+  const maxIterations = 25 // Total 1.25 seconds of glitching
+  
+  const interval = setInterval(() => {
+    const randomStr = (len) => Array(len).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('')
+    
+    displayName.value = randomStr(Math.max(6, Math.floor(Math.random() * 12)))
+    displayClass.value = randomStr(6)
+    displayLevel.value = Math.floor(Math.random() * 99).toString()
+    displayRank.value = chars[Math.floor(Math.random() * 26)]
+    displayGold.value = Math.floor(Math.random() * 99999).toString()
+    displayExp.value = Math.floor(Math.random() * 9999).toString()
+    displayMaxExp.value = Math.floor(Math.random() * 9999).toString()
+    
+    Object.keys(displayStats.value).forEach(key => {
+      displayStats.value[key] = (Math.random() * 99).toFixed(1)
+    })
+    
+    iteration++
+    if (iteration >= maxIterations) {
+      clearInterval(interval)
+      isGlitching.value = false
+    }
+  }, 50)
 })
 
 const getIcon = (key) => {
@@ -103,3 +152,18 @@ const getIcon = (key) => {
   return icons[key] || 'star'
 }
 </script>
+
+<style scoped>
+.glitch-shake {
+  animation: glitch-anim 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes glitch-anim {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-1px, 1px); }
+  40% { transform: translate(1px, -1px); }
+  60% { transform: translate(-1px, -1px); }
+  80% { transform: translate(1px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+</style>
